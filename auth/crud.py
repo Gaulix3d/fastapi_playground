@@ -1,12 +1,11 @@
 from database import get_db
 from auth.models import UserModel
 from auth.schemas import UserPostSchema, UserGetSchema
-from auth.security import Security
+from auth.security import security
 
 
 def create_user(db: get_db, item: UserPostSchema):
-    hasher = Security()
-    item.password = hasher.get_password_hash(password= item.password)
+    item.password = security.get_password_hash(password= item.password)
     db_item = UserModel(**item.model_dump())
     db.add(db_item)
     db.commit()
