@@ -1,14 +1,5 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-
-
-
-
-class Item(BaseModel):
-    key1: str
-    key2: str
-
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 app.add_middleware(
@@ -20,7 +11,3 @@ app.add_middleware(
 )
 
 
-@app.post("/items/")
-async def create_item(item: Item):
-    print(item)
-    return item
