@@ -1,7 +1,7 @@
 from database import get_db
-from models import UserModel
-from schemas import UserPostSchema, UserGetSchema
-from security import Security
+from auth.models import UserModel
+from auth.schemas import UserPostSchema, UserGetSchema
+from auth.security import Security
 
 def create_user(db: get_db, item: UserPostSchema):
     item.password = Security.get_password_hash(password= item.password)
