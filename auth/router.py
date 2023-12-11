@@ -8,7 +8,7 @@ auth_router = APIRouter()
 
 @auth_router.post('/register')
 def user_register(user: UserPostSchema, db: Session = Depends(get_db)):
-    return create_user(user, db)
+    return create_user(db=db, item=user)
 
 @auth_router.post('/login')
 def user_login(user: UserPostSchema, db: Session = Depends(get_db)):
