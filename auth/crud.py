@@ -14,5 +14,8 @@ def create_user(db: get_db, item: UserPostSchema):
 
 
 def get_user_data(db: get_db, item: UserGetSchema):
-    return db.query(UserModel).filter(UserModel.email == item.email).first()
-    
+    user_data = db.query(UserModel).filter(UserModel.email == item.email).first()
+    if user_data:
+        return user_data
+    else:
+        return None

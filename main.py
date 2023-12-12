@@ -4,6 +4,7 @@ from auth.router import auth_router
 from database import init_db
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Add your React app's URL
@@ -11,5 +12,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 init_db()
+
 app.include_router(router=auth_router)
+
+@app.get('/')
+def hi():
+    return 'Fuck'
