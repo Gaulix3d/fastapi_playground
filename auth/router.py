@@ -14,7 +14,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 10000
 def user_register(user: UserPostSchema, db: Session = Depends(get_db)):
     return create_user(db=db, item=user)
 
-@auth_router.post('/login', response_model=Token)
+@auth_router.post('/token', response_model=Token)
 def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:

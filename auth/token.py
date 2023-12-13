@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from typing import Annotated
 from fastapi import HTTPException, Depends, status
@@ -26,7 +27,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -35,12 +36,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        print(username)
         if username is None:
             raise credentials_exception
         email = UserGetSchema(email=username)
     except JWTError:
         raise credentials_exception
-    user = get_user_data(get_db, email)
+    user = get_user_data(db, email)
     if user is None:
         raise credentials_exception
     return user.email
