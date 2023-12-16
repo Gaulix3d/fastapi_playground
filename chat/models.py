@@ -7,3 +7,4 @@ class MessageModel(Base):
     email = Column(String)
     message = Column(String)
     sent_date = Column(DateTime)
+

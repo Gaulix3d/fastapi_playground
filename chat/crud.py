@@ -11,3 +11,4 @@ def add_message(message_data: MessageSchema, db: get_db):
 
 def get_messages(db: get_db):
     return db.query(MessageModel).all()
+

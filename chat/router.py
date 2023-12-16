@@ -31,3 +31,4 @@ async def get_all_messages(current_user: dict = Depends(get_current_user), db: S
     return get_messages(db)
 
 
+

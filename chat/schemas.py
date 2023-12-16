@@ -6,3 +6,4 @@ class MessageSchema(BaseModel):
     email: EmailStr
     message: str
     sent_date: datetime
+
