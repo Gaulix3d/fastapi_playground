@@ -1,6 +1,7 @@
 from auth.token import get_current_user
 from sqlalchemy.orm import Session
 from database import get_db
+import json
 from fastapi import (
     Cookie,
     Depends,
@@ -10,6 +11,8 @@ from fastapi import (
     WebSocketException,
     status,
     APIRouter,
+    Request,
+    WebSocketDisconnect
 )
 from chat.schemas import MessageSchema
 from datetime import datetime
@@ -21,10 +24,18 @@ chat_router = APIRouter()
 async def chat_page(websocket: WebSocket, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     await websocket.accept()
     while True:
-        data = await websocket.receive_json()
-        schema_message = MessageSchema(email=current_user, message= str(data), sent_date= datetime.utcnow())
-        add_message(schema_message, db)
-        await websocket.send_json(schema_message)
+        try:
+            data = await websocket.receive_json()
+            schema_message = MessageSchema(email=current_user, message=data['message'], sent_date=datetime.utcnow())
+            add_message(schema_message, db)
+            await websocket.send_json(schema_message.model_dump_json())
+        except WebSocketDisconnect as e:
+            # Handle the disconnect, log, or perform cleanup
+            print(f"WebSocket disconnect: {e}")
+            break  # Exit the loop on disconnect
+        except WebSocketException as e:
+            # Handle other exceptions
+            print(f"Error in WebSocket communication: {e}")
 
 @chat_router.get('/messages')
 async def get_all_messages(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):

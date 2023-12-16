@@ -3,13 +3,19 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from typing import Annotated
 from fastapi import HTTPException, Depends, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from auth.schemas import UserGetSchema
 from auth.crud import get_user_data
 from database import get_db
 from auth.security import security
+from fastapi import Request, WebSocket
+from fastapi.security import OAuth2PasswordBearer
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
+    async def __call__(self, request: Request = None, websocket: WebSocket = None):
+        return await super().__call__(request or websocket)
+
+oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="token")
 
 
 SECRET_KEY = 'ff32476201ee03bc6a0ce5292ce5863eb1ac1351df7367778a4d01262af77981'
