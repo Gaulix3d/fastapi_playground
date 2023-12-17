@@ -21,12 +21,20 @@ chat_router = APIRouter()
 
 
 @chat_router.websocket('/chat')
-async def chat_page(websocket: WebSocket, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+async def chat_page(websocket: WebSocket, token: str = None, db: Session = Depends(get_db)):
+    print(token)
+    if token is None:
+        await websocket.close()
+        return
+
     await websocket.accept()
+    print(f'Someone connected with token: {token}')
+    current_user = await get_current_user(token=token, db=db)
+
     while True:
         try:
-            data = await websocket.receive_json()
-            schema_message = MessageSchema(email=current_user, message=data['message'], sent_date=datetime.utcnow())
+            data = await websocket.receive_text()
+            schema_message = MessageSchema(email=current_user.email, message=data, sent_date=datetime.utcnow())
             add_message(schema_message, db)
             await websocket.send_json(schema_message.model_dump_json())
         except WebSocketDisconnect as e:

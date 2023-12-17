@@ -51,7 +51,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     user = get_user_data(db, email)
     if user is None:
         raise credentials_exception
-    return user.email
+    return email
 
 
 def authenticate_user(get_db, username: str, password: str):
